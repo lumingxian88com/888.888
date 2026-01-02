@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的自動監控中心</title>
+</head>
+<body style="background-color: #f0f0f0; padding: 20px; font-family: Microsoft JhengHei, sans-serif;">
+
+    <h1>🤖 我的自動化監控中心</h1>
+    <p>這個頁面會自動檢查日期，並在發現更新時幫你紀錄號碼。</p>
+
+    <hr>
+
+    <div id="status-board" style="border: 3px dashed red; background: #fff; padding: 20px; margin-top: 20px; min-height: 200px;">
+        <h2 style="color: red; margin-top: 0;">📋 執行報告：</h2>
+        <div id="logs" style="line-height: 1.8; font-size: 18px; color: #333;">
+            (等待程序啟動中...)
+        </div>
+    </div>
+
+    <script>
+        // 1. 定義「寫日記」的工具，讓它把訊息印在紅框框裡
+        function logToScreen(msg) {
+            const logDiv = document.getElementById('logs');
+            if (logDiv) {
+                // 如果是第一次執行，先把「等待程序啟動」清空
+                if (logDiv.innerHTML.includes("(等待程序啟動中...)")) {
+                    logDiv.innerHTML = "";
+                }
+                const now = new Date().toLocaleTimeString();
+                logDiv.innerHTML += `<div>[${now}] ${msg}</div>`;
+            }
+        }
+
+        // 2. 這是你的核心程序
+        function startWork() {
+            logToScreen("🚀 程序開始檢查...");
+
+            // --- 你想設定的號碼寫在這裡 ---
+            let myNumbers = "05, 13, 34, 35, 36";
+            
+            // 抓取目前的日期（格式：MM/DD）
+            let today = new Date();
+            let dateStr = `${(today.getMonth()+1).toString().padStart(2,'0')}/${today.getDate().toString().padStart(2,'0')}`;
+            
+            logToScreen("📅 今天的日期是: " + dateStr);
+
+            // 讀取電腦裡的舊紀錄
+            let latestInStorage = localStorage.getItem('latest_date') || "無紀錄";
+            logToScreen("📁 電腦舊紀錄是: " + latestInStorage);
+
+            // 3. 判斷是否要更新
+            if (dateStr !== latestInStorage) {
+                logToScreen("<b style='color:red;'>📢 發現新日期！正在執行更新...</b>");
+                logToScreen(`🎯 自動存入號碼: [${myNumbers}]`);
+                
+                // 存入電腦
+                localStorage.setItem('latest_date', dateStr);
+                logToScreen("✅ 更新成功，資料已存入電腦。");
+            } else {
+                logToScreen("😴 檢查完畢：888.888,日期跟舊紀錄一樣");
+            }
+        }
+
+        // 當網頁一打開，立刻執行
+        window.onload = startWork;
+    </script>
+
+</body>
+</html>
